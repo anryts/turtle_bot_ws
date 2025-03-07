@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="turtlesim" exec="turtlesim_node"></node>
+    <node pkg="main_turtle_package" exec="main_turtle_node" /> 
+    <node pkg="spawn_turtle_package" exec="spawn_turtle_node" /> 
+</launch>
