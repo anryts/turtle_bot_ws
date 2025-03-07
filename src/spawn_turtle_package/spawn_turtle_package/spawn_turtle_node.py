@@ -17,7 +17,9 @@ class SpawnNodeTurtle(Node):
         super().__init__(node_name)
         self.client_ = self.create_client(Spawn, topic_name)
         # Turtle creation are predefined.
-        self.publisher_ = self.create_publisher(TurtleCreation, "turtle_creation", qos_profile=1)
+        self.publisher_ = self.create_publisher(
+            TurtleCreation, "turtle_creation", qos_profile=1
+        )
         while not self.client_.wait_for_service(timeout_sec=1):
             self.get_logger().warn(
                 f"service {topic_name} not available, waiting again ..."
@@ -31,17 +33,20 @@ class SpawnNodeTurtle(Node):
         self.req._x = float(randrange(0, 10))
         self.req._y = float(randrange(0, 10))
         self.req._theta = float(randrange(0, 10))
+        self.req._name = "dog" + self.counter_.__str__()
         self.get_logger().info(
             f"We are creating another one turtle: x, y {self.req._x, self.req._y}, theta {self.req._theta}"
         )
+        self.counter_ += 2
         return self.client_.call_async(self.req)
 
     def notify_about_creation(self):
         self.req_about_spawn.x = self.req._x
         self.req_about_spawn.y = self.req._y
         self.req_about_spawn.theta = self.req._theta
+        self.req_about_spawn.name = self.req._name
         self.get_logger().info(
-            f"We pushed a message about turtle creation: x, y {self.req._x, self.req._y}, theta {self.req._theta}"
+            f"We pushed a message about turtle creation: x, y {self.req._x, self.req._y}, theta {self.req._theta} and name {self.req._name}"
         )
         self.publisher_.publish(self.req_about_spawn)
 
@@ -55,7 +60,7 @@ def main():
         response = future.result()
         main_turtle.notify_about_creation()
         main_turtle.get_logger().info(f"turtle with name: {response.name}")
-        time.sleep(5)
+        time.sleep(1)
 
     rclpy.spin(main_turtle)
     rclpy.shutdown()
